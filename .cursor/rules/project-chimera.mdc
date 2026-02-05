@@ -1,0 +1,48 @@
+---
+alwaysApply: true
+description: Project Chimera governance and development rules
+---
+
+# Project Chimera — Cursor Rules
+
+## Project Context
+
+**This is Project Chimera, an autonomous influencer system.**
+
+- Hierarchical Swarm architecture: Planner → Worker → Judge
+- Spec-Driven Development (SDD): Specs own intent, contracts, and safety
+- MCP as the sole integration boundary for external I/O
+- Key specs: `specs/_meta.md`, `specs/functional.md`, `specs/technical.md`
+
+---
+
+## The Prime Directive
+
+**NEVER generate code without checking specs/ first.**
+
+1. Before implementing any feature, read the relevant spec(s) in `specs/`
+2. Verify the spec is APPROVED or DRAFT with clear requirements
+3. If no spec exists for the requested work, refuse and propose creating one
+4. Implementation MUST align with API contracts in `specs/technical.md` and user stories in `specs/functional.md`
+
+---
+
+## Traceability
+
+**Explain your plan before writing code.**
+
+1. **State the goal**: What spec(s) and user story(ies) this implements
+2. **Outline the approach**: Which components, skills, or APIs are involved
+3. **Reference contracts**: Cite the JSON schema or table from `specs/technical.md`
+4. **Then implement**: Write code only after the plan is clear and spec-aligned
+
+---
+
+## Quick Reference
+
+| Action | Required Step |
+|--------|---------------|
+| New feature | Check `specs/functional.md` for user story; create spec if missing |
+| API/Skill | Check `specs/technical.md` and `specs/main/contracts/` for contracts |
+| Data model | Check `specs/technical.md` ERD and `specs/main/data-model.md` |
+| Commit | Include `Spec:` and `Test:` lines in commit body |
