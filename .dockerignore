@@ -1,0 +1,54 @@
+# Node.js
+node_modules
+npm-debug.log
+yarn-error.log
+
+# Python
+__pycache__
+*.pyc
+.venv
+
+# Compiled C/C++ code
+*.o
+*.exe
+
+# Build artefacts
+build/
+dist/
+
+# Environment variables files
+.env
+
+# macOS system files
+.DS_Store
+
+# Version control directories
+.git/
+.svn/
+
+# Docker specific files
+Dockerfile*
+docker-compose.yml
+
+*.md
+*.log
+
+
+.venv/
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+dist/
+build/
+*.egg-info/
+.git/
+.coverage
+htmlcov/
+*.mp4
+*.mov
+*.zip
+*.png
+*.jpg
+.env
+tests/__pycache__
