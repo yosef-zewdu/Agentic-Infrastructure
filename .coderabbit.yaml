@@ -1,0 +1,27 @@
+version: 1
+reviewer: CodeRabbit
+checks:
+  - id: spec_alignment
+    description: "Verify code aligns with `specs/technical.md` and skills SKILL.md files."
+    required: true
+    run:
+      - python3 scripts/spec_check.py
+
+  - id: security_vulnerabilities
+    description: "Run security-focused static checks and report high/critical findings."
+    required: true
+    run:
+      - pip install bandit safety
+      - bandit -r . -ll -iii || true
+      - safety check || true
+
+report:
+  format: summary
+  fail_on: [spec_alignment, security_vulnerabilities]
+
+instructions: |
+  The AI reviewer should:
+  - Confirm the project implements the API contracts in `specs/technical.md`.
+  - Run `scripts/spec_check.py` and flag mismatches between code and spec.
+  - Identify obvious security issues (use Bandit and Safety) and list remediation steps.
+  - Produce a short summary with action items and severity for each finding.
