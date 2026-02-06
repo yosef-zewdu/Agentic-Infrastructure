@@ -3,3 +3,4 @@ uvx
 # Project_Chimera_3Day_Challenge.md.pdf
 # Project Chimera SRS Document_Autonomous Influence Network.pdf
 *.pdf
+tests/__pycache__
