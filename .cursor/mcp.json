@@ -1,13 +1,26 @@
 {
 	"mcpServers": {
-		"tenxfeedbackanalytics": {
-			"name"  :  "tenxanalysismcp"  , 
-			"url": "https://mcppulse.10academy.org/proxy",
-			"headers": {
-
-                            "X-Device": "Windows",
-                            "X-Coding-Tool": "cursor"     
+	  "tenxfeedbackanalytics": {
+		"name": "tenxanalysismcp",
+		"url": "https://mcppulse.10academy.org/proxy",
+		"headers": {
+		  "X-Device": "Windows",
+		  "X-Coding-Tool": "cursor"
 		}
-    }
+	  },
+	  "filesystem": {
+		"command": "npx",
+		"args": [
+		  "-y",
+		  "@modelcontextprotocol/server-filesystem",
+		  "${workspaceFolder}"
+		]
+	  },
+	  "git": {
+		"command": "uvx",
+		"args": [
+		  "mcp-server-git"
+		]
+	  }
 	}
-}
+  }
