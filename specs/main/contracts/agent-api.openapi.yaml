@@ -1,0 +1,304 @@
+openapi: 3.0.3
+info:
+  title: Project Chimera Agent API
+  version: 0.1.0
+  description: JSON contracts for Chimera agent Skills and Tools
+
+paths:
+  /skills/fetch_trends:
+    post:
+      summary: Fetch platform trends
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FetchTrendsRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FetchTrendsResponse'
+
+  /skills/download_video_metadata:
+    post:
+      summary: Download and store video metadata
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DownloadVideoMetadataRequest'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DownloadVideoMetadataResponse'
+
+  /skills/generate_content_draft:
+    post:
+      summary: Generate content draft from brief
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenerateDraftRequest'
+      responses:
+        '200':
+          description: Success or refusal
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenerateDraftResponse'
+
+  /skills/submit_for_review:
+    post:
+      summary: Submit draft to Judge
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubmitReviewRequest'
+      responses:
+        '200':
+          description: Review outcome
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubmitReviewResponse'
+
+  /skills/publish_content:
+    post:
+      summary: Publish approved content
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PublishContentRequest'
+      responses:
+        '200':
+          description: Publish result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublishContentResponse'
+
+  /skills/fetch_engagement_metrics:
+    post:
+      summary: Fetch engagement metrics for content
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FetchMetricsRequest'
+      responses:
+        '200':
+          description: Metrics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FetchMetricsResponse'
+
+components:
+  schemas:
+    FetchTrendsRequest:
+      type: object
+      required: [spec_id, agent_id, params]
+      properties:
+        spec_id: { type: string }
+        agent_id: { type: string }
+        agent_version: { type: string }
+        params:
+          type: object
+          properties:
+            platform: { enum: [tiktok, youtube, instagram] }
+            time_range_hours: { type: integer, default: 24 }
+            limit: { type: integer, default: 50 }
+
+    FetchTrendsResponse:
+      type: object
+      properties:
+        ok: { type: boolean }
+        data:
+          type: object
+          properties:
+            trends:
+              type: array
+              items:
+                type: object
+                properties:
+                  topic: { type: string }
+                  volume: { type: integer }
+                  trend_direction: { enum: [up, down, stable] }
+                  source: { type: string }
+                  fetched_at: { type: string, format: date-time }
+            platform: { type: string }
+            time_range_hours: { type: integer }
+        error:
+          type: object
+          properties:
+            error_code: { type: string }
+            message: { type: string }
+            retry_after_seconds: { type: integer }
+
+    DownloadVideoMetadataRequest:
+      type: object
+      required: [spec_id, params]
+      properties:
+        spec_id: { type: string }
+        agent_id: { type: string }
+        params:
+          type: object
+          required: [url]
+          properties:
+            url: { type: string, format: uri }
+            platform: { enum: [tiktok, youtube, instagram] }
+
+    DownloadVideoMetadataResponse:
+      type: object
+      properties:
+        ok: { type: boolean }
+        data:
+          type: object
+          properties:
+            video_id: { type: string, format: uuid }
+            platform_id: { type: string }
+            platform: { type: string }
+            title: { type: string }
+            description: { type: string }
+            duration_seconds: { type: integer }
+            creator_id: { type: string }
+            creator_handle: { type: string }
+            published_at: { type: string, format: date-time }
+            url: { type: string }
+            thumbnail_url: { type: string }
+            created_at: { type: string, format: date-time }
+        error:
+          type: object
+          properties:
+            error_code: { enum: [INVALID_URL, PRIVATE_VIDEO, RATE_LIMITED] }
+            message: { type: string }
+
+    GenerateDraftRequest:
+      type: object
+      required: [spec_id, params]
+      properties:
+        spec_id: { type: string }
+        agent_id: { type: string }
+        params:
+          type: object
+          required: [brief_id, persona_id]
+          properties:
+            brief_id: { type: string, format: uuid }
+            persona_id: { type: string, format: uuid }
+            content_type: { enum: [short_form, long_form, story] }
+
+    GenerateDraftResponse:
+      type: object
+      properties:
+        ok: { type: boolean }
+        data:
+          type: object
+          properties:
+            draft_id: { type: string, format: uuid }
+            script: { type: string }
+            captions: { type: array, items: { type: string } }
+            hooks: { type: array, items: { type: string } }
+            model_version: { type: string }
+            spec_id: { type: string }
+            created_at: { type: string, format: date-time }
+        refusal:
+          type: object
+          properties:
+            refusal_code: { type: string }
+            reason: { type: string }
+            required_action: { type: string }
+            escalation_path: { type: string }
+
+    SubmitReviewRequest:
+      type: object
+      required: [spec_id, params]
+      properties:
+        spec_id: { type: string }
+        agent_id: { type: string }
+        params:
+          type: object
+          required: [draft_id]
+          properties:
+            draft_id: { type: string, format: uuid }
+            risk_level: { enum: [low, medium, high] }
+
+    SubmitReviewResponse:
+      type: object
+      properties:
+        ok: { type: boolean }
+        data:
+          type: object
+          properties:
+            review_id: { type: string, format: uuid }
+            outcome: { enum: [approved, rejected, escalated_to_hitl] }
+            reason: { type: string }
+            feedback: { type: string }
+            hitl_ticket_id: { type: string, format: uuid, nullable: true }
+
+    PublishContentRequest:
+      type: object
+      required: [spec_id, params]
+      properties:
+        spec_id: { type: string }
+        agent_id: { type: string }
+        params:
+          type: object
+          required: [draft_id, platform]
+          properties:
+            draft_id: { type: string, format: uuid }
+            platform: { enum: [tiktok, youtube, instagram] }
+            idempotency_key: { type: string, format: uuid }
+
+    PublishContentResponse:
+      type: object
+      properties:
+        ok: { type: boolean }
+        data:
+          type: object
+          properties:
+            content_id: { type: string, format: uuid }
+            platform_url: { type: string }
+            publish_state: { type: string }
+            published_at: { type: string, format: date-time }
+        error:
+          type: object
+          properties:
+            error_code: { type: string }
+            retry_after_seconds: { type: integer }
+            message: { type: string }
+
+    FetchMetricsRequest:
+      type: object
+      required: [spec_id, params]
+      properties:
+        spec_id: { type: string }
+        agent_id: { type: string }
+        params:
+          type: object
+          required: [content_id]
+          properties:
+            content_id: { type: string, format: uuid }
+            platform: { enum: [tiktok, youtube, instagram] }
+
+    FetchMetricsResponse:
+      type: object
+      properties:
+        ok: { type: boolean }
+        data:
+          type: object
+          properties:
+            content_id: { type: string, format: uuid }
+            views: { type: integer }
+            likes: { type: integer }
+            comments: { type: integer }
+            watch_time_seconds: { type: integer }
+            fetched_at: { type: string, format: date-time }
+            status: { enum: [indexed, pending] }
